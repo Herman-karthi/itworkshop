@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin - Meal Confirmations</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 2em; }
+    label, input, button { font-size: 1em; }
+    #yesUsersList { margin-top: 1em; }
+  </style>
+</head>
+<body>
+  <h1>Meal Confirmation Admin</h1>
+  <label for="adminMealDate">Select date:</label>
+  <input type="date" id="adminMealDate">
+  <button id="adminGetBtn">Get Yes Count & Users</button>
+  <div id="adminResult"></div>
+  <ul id="yesUsersList"></ul>
+
+  <script>
+    document.getElementById('adminGetBtn').addEventListener('click', async function() {
+      const mealDate = document.getElementById('adminMealDate').value;
+      const resultDiv = document.getElementById('adminResult');
+      const usersList = document.getElementById('yesUsersList');
+      resultDiv.textContent = '';
+      usersList.innerHTML = '';
+
+      if (!mealDate) {
+        resultDiv.textContent = 'Please select a date.';
+        return;
+      }
+
+      try {
+        // Fetch count
+        const countRes = await fetch(`/api/meal-confirmation/count?mealDate=${encodeURIComponent(mealDate)}`);
+        const countData = await countRes.json();
+        resultDiv.textContent = `Yes count for ${mealDate}: ${countData.count}`;
+
+        // Fetch users
+        const usersRes = await fetch(`/api/meal-confirmation/yes-users?mealDate=${encodeURIComponent(mealDate)}`);
+        const usersData = await usersRes.json();
+        if (usersData.users.length === 0) {
+          usersList.innerHTML = '<li>No users said "yes" for this date.</li>';
+        } else {
+          usersData.users.forEach(user => {
+            usersList.innerHTML += `<li>User ID: ${user.user_id}</li>`;
+          });
+        }
+      } catch (err) {
+        resultDiv.textContent = 'Error fetching data.';
+        console.error(err);
+      }
+    });
+  </script>
+</body>
+</html>
