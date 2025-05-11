@@ -1,4 +1,7 @@
 # itworkshop
+{**mandatory:
+to run : - // create the users table in itworkshop database in pgadmin  before runing the login.js file //
+}
  1. Introduction
  This project is a web-based College Mess Management System developed with the aim of reducing food
  wastage and improving efficiency. 
